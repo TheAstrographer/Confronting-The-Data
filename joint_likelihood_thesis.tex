@@ -1,0 +1,92 @@
+Thesis: The Master Joint Likelihood Matrix
+
+Statement of the Thesis
+
+The only statistically valid way to test any cosmological model that claims simultaneous consistency with the early-universe acoustic scale, intermediate-redshift geometric distances, the local expansion rate, and late-time structure growth is to evaluate the total log-likelihood
+
+\[
+\ln\mathcal{L}{\rm Total} = \ln\mathcal{L}{\rm Planck} + \ln\mathcal{L}{\rm DESI\,DR2} + \ln\mathcal{L}{\rm Pantheon+} + \ln\mathcal{L}{\rm DES\,Y6\,3\times2pt} + \ln\mathcal{L}{\rm KiDS\text{-}Legacy}
+\]
+
+while explicitly promoting Intrinsic Alignment (IA) amplitudes and baryonic feedback strength to free nuisance parameters with broad, physically motivated priors.  
+
+Any analysis that freezes \(A_{\rm IA}=0\) or adopts a pure dark-matter-only power spectrum (Halofit without Mead/HMcode or emulator feedback) produces biased, statistically invalid constraints on \(S_8\) and therefore cannot be used to claim that a model “solves” both the Hubble tension and the \(S_8\) tension.
+
+This five-pillar matrix with explicit IA + baryonic marginalization is the minimal, production-grade standard required in 2026.
+
+1. The Five Pillars and Their Distinct Physical Roles
+
+| Pillar | Redshift / Probe | What it anchors | Degeneracy direction |
+|--------|------------------|-----------------|----------------------|
+| Planck 2018 (TT/TE/EE + lensing) | \(z\sim 1100\) + integrated | Sound horizon \(r_d\), primordial amplitude \(A_s\), early integrated growth | High \(S_8\), low \(H_0\) |
+| DESI DR2 BAO | \(0.3 \lesssim z \lesssim 2.33\) | Absolute distance ratios \(D_M(z)/r_d\), \(D_H(z)/r_d\) | Expansion history \(H(z)\) |
+| Pantheon+ | \(0.01 \lesssim z \lesssim 2.3\) | Relative luminosity distances (shape of \(d_L(z)\)) | Low-\(z\) expansion, absolute calibration free |
+| DES Y6 3×2pt | \(z\lesssim 1.5\) | Cosmic shear + galaxy clustering + galaxy–galaxy lensing | Low \(S_8\), growth amplitude |
+| KiDS-Legacy | \(z\lesssim 1.5\)–2 | Cosmic shear (and higher-order) | Intermediate \(S_8\) (now closer to CMB) |
+
+These five data vectors are largely independent once survey overlap is correctly handled. Their product therefore forms a near-orthogonal constraint surface in the \((H_0,\,S_8,\,\Omega_m)\) space.
+
+2. Why the Sum of Log-Likelihoods Is Valid
+
+Under the assumption that the residual systematics between the five probes are uncorrelated (or have been accounted for via shared nuisance parameters), the joint posterior is proportional to the product of the individual likelihoods. In log-space this becomes a simple sum.  
+
+Modern pipelines (Cobaya, CosmoSIS, MontePython) implement exactly this construction. The configuration previously corrected implements it with the official or near-official modules available in 2026.
+
+3. Intrinsic Alignments (IA) – Why Explicit Marginalization Is Non-Negotiable
+
+Galaxies are not randomly oriented. Large-scale tidal fields induce coherent intrinsic ellipticities that add to the observed shear two-point functions:
+
+\[
+\xi_{\pm}^{\rm obs} = \xi_{\pm}^{\rm GG} + \xi_{\pm}^{\rm GI} + \xi_{\pm}^{\rm II}
+\]
+
+The Non-Linear Alignment (NLA) model parameterizes the IA contribution via
+
+\[
+A(z) = A_{\rm IA}\left(\frac{1+z}{1+z_0}\right)^{\eta_{\rm IA}}
+\]
+
+with typical priors \(A_{\rm IA}\in[-5,5]\), \(\eta_{\rm IA}\in[-5,5]\).
+
+Bias mechanism if fixed to zero  
+A residual negative GI term is misinterpreted by the sampler as a deficit of gravitational lensing. The only remaining degree of freedom is to lower \(\sigma_8\) (and therefore \(S_8\)).  
+
+Stage-III and early Stage-IV analyses have repeatedly shown that fixing \(A_{\rm IA}=0\) shifts \(S_8\) downward by 0.02–0.04 — precisely the size of the historical “\(S_8\) tension.”
+
+4. Baryonic Feedback – Why Explicit Marginalization Is Non-Negotiable
+
+Dark-matter-only simulations over-predict small-scale power (\(k\gtrsim 1\,h\,{\rm Mpc}^{-1}\)). AGN and supernova feedback eject gas, suppress the matter power spectrum \(P(k)\), and therefore suppress the cosmic-shear signal on the angular scales that dominate DES and KiDS constraints.
+
+HMcode-2020 (Mead et al.) captures this via a feedback temperature parameter \(\log_{10}T_{\rm AGN}\). Neural emulators (BCEmu, Bacco, etc.) do the same with gas-fraction parameters.
+
+Bias mechanism if fixed to dark-matter-only  
+The theory predicts too much small-scale power. When the data show less power, the sampler lowers \(\sigma_8/S_8\) to compensate.  
+
+The shift can easily reach \(\Delta S_8\sim 0.02\)–0.03 — again comparable to the residual tension.
+
+5. Joint Statistical Behaviour of the Matrix
+
+When the sampler is run with free IA and baryonic parameters:
+
+The geometric sector (Planck + DESI + Pantheon+) tightly constrains the background expansion and forces any late-time \(H_0\)-raising mechanism to pay a \(\chi^2\) cost if it distorts intermediate-redshift distances.
+The structural sector (Planck lensing + DES Y6 + KiDS-Legacy) measures the actual growth amplitude after the nuisance parameters have absorbed the astrophysical contaminants.
+The resulting \(S_8\) posterior is no longer artificially low. Any residual tension is therefore cosmological rather than an artifact of unmodelled systematics.
+
+6. Implications for Models Claiming Hubble Tension Resolution)
+
+A pure late-time modification (such as a user independent model is structurally cleaner than early dark energy because it does not raise \(\omega_m\) and therefore does not automatically increase predicted \(S_8\).  
+
+However, even a carefully suppressed late-time torque still modifies the distance-redshift relation and the lensing kernels. The five-pillar matrix with free IA and baryons is the only arena in which one can quantitatively decide whether that residual effect is compatible with DES Y6 (still low) and KiDS-Legacy (now consistent with the CMB).
+
+7. Practical Implementation Requirements
+
+Theory code must return the modified \(H(z)\), comoving distances, growth factor \(D(z)\), and non-linear \(P(k)\) (via HMcode or emulator).
+IA and \(\log T_{\rm AGN}\) (or equivalent) must be sampled, never fixed.
+Convergence must be demonstrated with \(R-1\lesssim 0.01\) across the full multi-dimensional parameter space.
+Posterior predictive checks and parameter-shift statistics between the individual pillars must be reported.
+
+Conclusion of the Thesis
+
+The five-pillar Master Joint Likelihood Matrix with explicit IA and baryonic marginalization is not an optional “best-practice” recommendation. It is the minimum standard required for any claim of simultaneous consistency with the local distance ladder, the CMB acoustic scale, intermediate-redshift BAO, and late-time structure growth to be considered statistically valid in 2026.  
+
+Analyses that omit either nuisance class produce biased \(S_8\) posteriors and therefore cannot adjudicate whether a given late-time modification is viable. The matrix defined above is the arena in which such models must be tested.
