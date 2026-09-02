@@ -1,0 +1,46 @@
+In a multi-probe MCMC analysis, the anisotropic parameter splits from the DESI DR2 BAO data vector provide one of the most powerful diagnostic tests available.
+By measuring the clustering of galaxies and the Lyman-alpha forest across discrete redshift slices from z = 0.510 up to z = 2.330, DESI maps out the Alcock-Paczynski (AP) effect with unprecedented accuracy. This effect breaks the degeneracy between the true underlying cosmology and the assumed coordinate system by isolating two completely independent geometric projections:
+
+* Transverse Component ($D_M/r_d$): Tracks the comoving angular diameter distance, probing the cosmic geometry perpendicular to our line of sight.
+* Radial Component ($D_H/r_d$): Tracks the Hubble distance ($D_H(z) \equiv c/H(z)$), probing the direct expansion rate along the line of sight.
+
+Both components are normalized by the sound horizon scale at the drag epoch ($r_d$).
+------------------------------
+## The Redshift-Bin Baseline
+When evaluating a non-standard cosmological model, your Boltzmann code must output explicit, localized predictions for both $D_M(z)/r_d$ and $D_H(z)/r_d$ across these distinct DESI redshift intervals.
+
+                                    DESI DR2 BAO DECOUPLING
+                         
+  [Line of Sight / Radial]      ======> D_H(z)/r_d  ===> Highly sensitive to H(z) spikes
+  
+  [Perpendicular / Transverse]  ======> D_M(z)/r_d  ===> Tracks integrated geometry ∫ c/H(z) dz
+
+For models that attempt to resolve cosmological tensions, these decoupled parameters act as a severe bottleneck:
+
+   1. Intermediate-Redshift Galaxy Tracers (0.510 ≤ z ≤ 1.5)
+   * The Data: Derived from Luminous Red Galaxies (LRGs) and Emission Line Galaxies (ELGs).
+      * The Test: If your model introduces a late-time modification—such as decaying dark matter or a rapidly evolving dark energy equation of state ($w_0 w_a$)—it will distort the smooth expansion history here. Because $D_H(z)$ tracks the instantaneous expansion while $D_M(z)$ tracks the integrated expansion history, any sudden drop or spike in dark energy density will shift these two parameters in opposite directions, triggering an immediate χ² failure against the tight DESI covariance matrix.
+   2. High-Redshift Quasar and Lyman-Alpha Sectors (1.5 ≤ z ≤ 2.330)
+   * The Data: Derived from Quasar (QSO) clustering and Lyman-alpha forest auto- and cross-correlations.
+      * The Test: This high-redshift anchor is critical for testing early-universe modifications (like Early Dark Energy). While an EDE component clears out before recombination, it shrinks the physical size of the sound horizon ($r_d$). To keep the CMB primary peaks aligned, the model must adjust the late-universe parameters. The independent $D_M/r_d$ and $D_H/r_d$ ratios at z > 1.5 tightly lock the expansion rate during the transition from matter dominance to dark energy dominance, preventing H(z) from drifting freely to accommodate a smaller $r_d$.
+   
+------------------------------
+## The AP Likelihood Matrix Interface
+Inside your Cobaya or CosmoSIS likelihood engine, this anisotropic split is implemented as a multi-dimensional Gaussian likelihood using a compressed data vector ($\mathbf{D}$) and an explicit covariance matrix ($\mathbf{C}$). For a given redshift bin $z_i$, the data vector takes the form:
+$$\mathbf{D}_{z_i} = \begin{pmatrix} D_M(z_i)/r_d \\ D_H(z_i)/r_d \end{pmatrix}$$ 
+The MCMC sampler continuously computes the theoretical vector $\mathbf{D}_{\rm theo}$ and compares it to the observed DESI data vector $\mathbf{D}_{\rm obs}$ using the inverse covariance:
+$$\chi^2_{\rm BAO} = \sum_{i,j} (\mathbf{D}_{\rm obs} - \mathbf{D}_{\rm theo})_i^T \, \mathbf{C}_{ij}^{-1} \, (\mathbf{D}_{\rm obs} - \mathbf{D}_{\rm theo})_j$$ 
+Because the transverse and radial components are correlated within each bin, any "pure vertical" or "pure horizontal" parameter adjustment in your model will miss the diagonal slope of the AP likelihood contours.
+------------------------------
+## Quantitative Diagnostic Check
+To turn this into a decisive quantitative test for your specific model configuration, you can extract the exact fractional residuals for both components at each redshift milestone.
+
+| Target Redshift Bin (z) | Primary Tracer | Metric Sensitive to Geometry | Metric Sensitive to Dynamics |
+|---|---|---|---|
+| z = 0.510 | BGS / LRG | $D_M(0.51)/r_d$ (Integrated) | $D_H(0.51)/r_d$ (Instantaneous) |
+| z = 0.706 | LRG Tracking | $D_M(0.71)/r_d$ (Integrated) | $D_H(0.71)/r_d$ (Instantaneous) |
+| z = 0.930 | LRG / ELG Blend | $D_M(0.93)/r_d$ (Integrated) | $D_H(0.93)/r_d$ (Instantaneous) |
+| z = 1.317 | ELG / QSO Tracking | $D_M(1.32)/r_d$ (Integrated) | $D_H(1.32)/r_d$ (Instantaneous) |
+| z = 2.330 | Lyman-α Forest | $D_M(2.33)/r_d$ (Integrated) | $D_H(2.33)/r_d$ (Instantaneous) |
+
+
