@@ -1,0 +1,81 @@
+# ==============================================================================
+# Production Joint Multi-Probe Matrix Configuration (Planck + DESI DR2 + Stage-IV Lensing)
+# ==============================================================================
+
+likelihood:
+  # --- Early-Universe Baseline & Primary CMB ---
+  planck_2018_highl_plik.TTTEEE:
+  planck_2018_lowl.TT:
+  planck_2018_lowl.EE:
+  planck_2018_lensing.baseline:
+
+  # --- Geometric Cosmic Expansion History ---
+  bao.desi_dr2_full_stack:
+    data_file: /opt/cosmo_data/likelihoods/desi_dr2/desi_dr2_bao.dataset
+  pantheon_plus.binned:
+    data_file: /opt/cosmo_data/likelihoods/pantheon_plus/pantheon_plus_binned_v1.dataset
+
+  # --- Late-Universe Large Scale Structure (3x2pt Joint Arrays) ---
+  des_y6.3x2pt:
+    data_file: /opt/cosmo_data/likelihoods/des_y6/des_y6_3x2pt_fiducial.dataset
+    baryonic_feedback_model: hmcode
+  kids_legacy.cosmic_shear:
+    data_file: /opt/cosmo_data/likelihoods/kids_legacy/kids_legacy_bandpowers.dataset
+    baryonic_feedback_model: hmcode
+
+theory:
+  camb:
+    path: /opt/cosmo_data/modules/CAMB
+    stop_at_error: False
+    extra_args:
+      lens_potential_accuracy: 2
+      AccuracyBoost: 1.2
+      lSampleBoost: 1.2
+      halofit_version: mead2020  # Crucial active HMcode tracking block
+
+params:
+  # --- Baseline Cosmological Parameters ---
+  ombh2: {prior: {min: 0.005, max: 0.1}, ref: 0.02237, proposal: 0.0001, latex: \Omega_b h^2}
+  omch2: {prior: {min: 0.001, max: 0.9}, ref: 0.1200, proposal: 0.001, latex: \Omega_c h^2}
+  H0:    {prior: {min: 55.0, max: 85.0}, ref: 67.36,  proposal: 0.4,   latex: H_0}
+  logA:  {prior: {min: 1.61, max: 3.91}, ref: 3.044,  proposal: 0.002, drop: true, latex: \ln(10^{10} A_s)}
+  As:    {value: 'lambda logA: 1e-10*np.exp(logA)', latex: A_s}
+  ns:    {prior: {min: 0.8, max: 1.2},   ref: 0.9649, proposal: 0.004, latex: n_s}
+  tau:   {prior: {min: 0.01, max: 0.8},  ref: 0.0544, proposal: 0.006, latex: \tau}
+
+  # ============================================================================
+  # Free Active Marginalization Parameters (Requested Nuisance Pillars)
+  # ============================================================================
+  A_IA:
+    prior: {min: -4.0, max: 4.0}
+    ref: 0.5
+    proposal: 0.1
+    latex: A_{\rm IA}
+  alpha_IA:
+    prior: {min: -5.0, max: 5.0}
+    ref: 0.0
+    proposal: 0.2
+    latex: \eta_{\rm IA}
+  logT_AGN:
+    prior: {min: 7.0, max: 9.0}
+    ref: 7.8
+    proposal: 0.05
+    latex: \log_{10}(T_{\rm AGN}/{\rm K})
+
+  # --- Derived Parameter Outputs ---
+  Omega_m: {latex: \Omega_m}
+  sigma8:  {latex: \sigma_8}
+  S8:      {derived: 'lambda sigma8, Omega_m: sigma8 * np.sqrt(Omega_m / 0.3)', latex: S_8}
+
+# ==============================================================================
+# Dual-Stage Execution Module (MLE Minimization followed by High-Convergence MCMC)
+# ==============================================================================
+sampler:
+  mcmc:
+    burn_in: 0.3
+    max_tries: 2000000
+    covmat: auto
+    Rminus1_stop: 0.01  # Ultra-strict convergence threshold across all 5 vectors
+    output_every: 30s
+
+output: /opt/cosmo_data/production_runs/stage4_joint_matrix
