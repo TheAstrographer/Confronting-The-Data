@@ -1,0 +1,32 @@
+# ==============================================================================
+# Update your Theory Block to target the new Hybrid Boltzmann Module
+# ==============================================================================
+theory:
+  custom_fluid.CustomStageIVBoltzmannEngine:
+    python_path: .
+    # Pass necessary configuration options straight to the inherited CAMB solver
+    stop_at_error: False
+    extra_args:
+      lens_potential_accuracy: 2
+      AccuracyBoost: 1.2
+      halofit_version: mead2020  # Keeps free baryonic parameters active
+
+params:
+  # ============================================================================
+  # Promoted Parameters: No longer hardcoded inside the python script
+  # ============================================================================
+  alpha_fluid:
+    prior: {min: -0.4, max: 0.4}
+    ref: 0.0
+    proposal: 0.01
+    latex: \alpha_{\rm fluid}
+  z_decay:
+    prior: {min: 0.5, max: 3.5}
+    ref: 1.5
+    proposal: 0.1
+    latex: z_{\rm decay}
+  tau:
+    prior: {min: 0.01, max: 0.15}
+    ref: 0.0544
+    proposal: 0.006
+    latex: \tau
