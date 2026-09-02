@@ -1,0 +1,49 @@
+## 1. Nuisance Folding and Structure Invariance
+The continuous systematic errors you noted—photometric redshift uncertainties, intrinsic alignments, and magnification bias—are handled as linear corrections or selection effects within the pipelines. While they change the input functions, they leave the underlying structural projection intact:
+
+* Photo-$z$ Uncertainties: Modeled by shifting or stretching the selection distributions:
+$$n_i(z) \to n_i(z - \Delta z_i)$$ 
+This modifies the source distribution profile but does not touch the overarching integration loop.
+* Intrinsic Alignments (IA): Introduced by expanding the core power spectrum into separate physical components:
+$$P_{\delta\delta} \to P_{\delta\delta} + P_{\delta {\rm I}} + P_{\rm II}$$ 
+This isolates the intrinsic alignments from pure gravitational shearing.
+* Magnification Bias: Handled by adding an extra term directly to the tracer weight profile:
+$$W_{\delta_g}^i(\chi) \to W_{\delta_g}^i(\chi) + W_{\rm mag}^i(\chi)$$ 
+This maps the gravitational magnification directly alongside galaxy clustering.
+* Scale Cuts: Implemented by masking the final output data vectors, dropping angular multipoles ($\ell < \ell_{\rm min}$ or $\ell > \ell_{\rm max}$) where non-linear modeling errors or baryonic uncertainties break down.
+
+------------------------------
+## 2. The Hybridization Boundary: Beyond-Limber Corrections
+For wide photometric bins (like those in the DES Y6 or KiDS-Legacy cosmic shear analyses), the broad radial width acts as a natural high-pass filter that suppresses non-radial modes. This makes the Limber approximation highly accurate across almost all usable scales.
+However, when you include narrow spectroscopic clustering bins or cross-correlations at low multipoles ($\ell \lesssim 30 - 50$), the Limber approximation breaks down because it discards the line-of-sight components of the wavevectors ($k_\parallel \approx 0$). To prevent severe parameter bias, modern Stage-IV pipelines execute a structural switch:
+
+                              ANGULAR MULTIPOLE RANGE
+  
+  [ ℓ < 30 ]  =================================================> [ ℓ ≥ 30 ]
+       │                                                             │
+       ▼                                                             ▼
+  [ Beyond-Limber Projection ]                                  [ Limber Integration ]
+  • Exact Spherical Bessel j_ℓ(kχ) functions                     • Instantaneous mapping
+  • Evaluated via fast FFTLog matrix systems                     • k = (ℓ + 1/2) / χ
+
+The exact projection evaluates the double line-of-sight integral using spherical Bessel functions $j_\ell(k\chi)$:
+$$C_\ell^{XY} = \frac{2}{\pi} \int k^2 P_{\delta\delta}(k) \left[ \int W_X(\chi) j_\ell(k\chi) d\chi \right] \left[ \int W_Y(\chi') j_\ell(k\chi') d\chi' \right] dk$$ 
+By switching to fast FFTLog algorithms, pipelines handle these oscillating Bessel loops quickly, preserving exact physics at large angular scales while keeping the fast Limber loop for smaller scales.
+------------------------------
+## 3. Parameter Sensitivities: Amplitude vs. Coordinate Mapping
+Your distinction between how parameters affect the amplitude versus the geometry clarifies why different probes break specific degeneracies:
+
+* The Amplitude Control ($S_8$): Because weak lensing measures the total pulling power of dark matter structures along the line of sight, the overall vertical normalization of the $C_\ell^{\gamma\gamma}$ spectrum scales directly with $S_8^2$. This parameter dictates the total density of the fluctuations being integrated.
+* The Coordinate Shifts ($H_0, w_0, w_a, \Omega_k$): These parameters act as a cosmic coordinate transformation. Altering them stretches or compresses the comoving distance metric $\chi(z)$. This deforms the geometric kernels and alters the wavevector scale mapping:
+$$k = \frac{\ell + 1/2}{\chi(z)}$$ 
+A change here slides the entire power spectrum horizontally across your angular multipole bins and distorts the overlapping regions of your cross-correlation channels.
+
+------------------------------
+## Concluding the Setup Validation
+With these physical definitions completely verified, your cosmological sampler is properly equipped to test non-standard models without missing cross-talk between geometry and growth.
+To execute the final step of your pipeline analysis, would you like to:
+
+* Set up the specific GetDist plotting configurations to visualize how your model shifts along the $S_8$ mapping axis?
+* Output a template to calculate the exact fractional shift in the radial vs. transverse projections for your model?
+
+
