@@ -1,0 +1,49 @@
+The official Dark Energy Spectroscopic Instrument Data Release 2 (DESI DR2) packages its compressed Baryon Acoustic Oscillation (BAO) realizations as a standard multivariate Gaussian likelihood. This framework captures the comprehensive late-time geometric constraints derived from three years of survey footprints. [1, 2] 
+## 1. Mathematical Structure
+The compressed BAO likelihood operates by mapping the deviation between observed geometric parameters and theoretical cosmological calculations using a standard χ² representation: [3] 
+$$\chi^2_{\rm BAO}(\theta) = \left[ \mathbf{d}_{\rm obs} - \mathbf{d}_{\rm th}(\theta) \right]^T \mathbf{C}^{-1} \left[ \mathbf{d}_{\rm obs} - \mathbf{d}_{\rm th}(\theta) \right]$$ 
+
+* 
+* $\mathbf{d}_{\rm obs}$: The consolidated, post-reconstruction observational data vector provided by the collaboration.
+* $\mathbf{d}_{\rm th}(\theta)$: The corresponding theoretical calculation evaluated at cosmological model point θ.
+* $\mathbf{C}^{-1}$: The inverse of the full DESI DR2 covariance matrix, mapping systematic, cross-tracer, and cross-redshift window function correlations. [1, 3, 4, 5] 
+* 
+
+## 2. The Data Vector Components
+The indices of $\mathbf{d}_{\rm obs}$ group key geometric distances across a broad tomographic redshift network spanning up to z ~ 4.2: [6] 
+
+* 
+* Transverse Angular Distance: $D_M(z)/r_d$ (the comoving angular diameter distance scaled by the sound horizon at drag epoch).
+* Radial Hubbing Distance: $D_H(z)/r_d = c / (H(z) r_d)$ (the line-of-sight expansion rate parameter).
+* Spherically Averaged Distance: $D_V(z)/r_d$ (utilized predominantly in low-redshift isotropic constraints, such as the Bright Galaxy Sample). [1, 4] 
+* 
+
+## 3. Integrated Tracers
+The covariance matrix elements are computed via scripts found on the official cosmodesi RascalC repository. They span multi-tracer samples to preserve overlapping volume dynamics: [7] 
+
+* 
+* BGS (Bright Galaxy Sample): 0.1 < z < 0.4
+* LRGs (Luminous Red Galaxies): 0.4 < z < 1.1
+* ELGs (Emission Line Galaxies): 0.6 < z < 1.6
+* Quasars (QSOs): 0.8 < z < 2.1
+* Lyman-α Forest: z > 2.0 (measuring auto-correlation fluctuations alongside quasar cross-correlations). [1, 2, 4] 
+* 
+
+## 4. Direct Implementation Paradigms
+To execute parameter runs or explore the evolving dark energy ($w_0w_a$) spaces highlighted by DR2 findings, the likelihood matrix is implemented across standard modular inference interfaces via the [cosmodesi/desilike](https://github.com/cosmodesi/desilike) framework: [6, 8, 9] 
+
+* 
+* Cobaya: Native parameter mapping files are distributed directly through the standard [Cobaya BAO Data repository](https://github.com/CobayaSampler/bao_data). It pulls down the flat text arrays and covariance matrices to track joint standard combinations seamlessly.
+* CosmoSIS: Handled via custom external wrapper modules or standardized .ini block parameters linking to the flat covariance chains.
+* MontePython: Directly adapted from the bao_boss_dr12 paradigm using wrappers built to match the baseline desilike metadata structures. [3, 10] 
+* 
+
+------------------------------
+
+[1] [https://www.emergentmind.com](https://www.emergentmind.com/topics/desi-dr2-bao-data)
+[2] [https://www.desi.lbl.gov](https://www.desi.lbl.gov/2025/03/19/desi-dr2-results-march-19-guide/)
+[3] [https://www.emergentmind.com](https://www.emergentmind.com/topics/desi-dr2-bao-data)
+[4] [https://arxiv.org](https://arxiv.org/html/2503.14742v1)
+[5] [https://iopscience.iop.org](https://iopscience.iop.org/article/10.3847/1538-4365/ae7d1a)
+[6] [https://arxiv.org](https://arxiv.org/html/2607.23593v1)
+[7] [https://arxiv.org](https://arxiv.org/html/2503.14738v1)
