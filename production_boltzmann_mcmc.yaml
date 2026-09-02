@@ -1,19 +1,23 @@
 # ==============================================================================
-# Update your Theory Block to target the new Hybrid Boltzmann Module
+# SEPARATE YAML CONFIGURATION FOR THE DECOUPLED FLUID BACKGROUND MODEL
 # ==============================================================================
+
 theory:
+  # 1. Load the independent native background tracker class
   custom_fluid.CustomStageIVBoltzmannEngine:
     python_path: .
-    # Pass necessary configuration options straight to the inherited CAMB solver
+   
+  # 2. Maintain vanilla CAMB cleanly for un-collapsed perturbation functions
+  camb:
+    path: /opt/cosmology/modules/CAMB
     stop_at_error: False
     extra_args:
       lens_potential_accuracy: 2
-      AccuracyBoost: 1.2
-      halofit_version: mead2020  # Keeps free baryonic parameters active
+      halofit_version: mead2020
 
 params:
   # ============================================================================
-  # Promoted Parameters: No longer hardcoded inside the python script
+  # Custom Background Grid Sampling Priors
   # ============================================================================
   alpha_fluid:
     prior: {min: -0.4, max: 0.4}
@@ -25,8 +29,8 @@ params:
     ref: 1.5
     proposal: 0.1
     latex: z_{\rm decay}
-  tau:
-    prior: {min: 0.01, max: 0.15}
-    ref: 0.0544
-    proposal: 0.006
-    latex: \tau
+
+# Change output target paths to protect your baseline ΛCDM file histories
+output: chains/fluid_background_run/probe_matrix
+
+ 
