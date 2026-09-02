@@ -1,0 +1,38 @@
+The fiducial bandpower binning and multipole ($\ell$) ranges utilized by the prominent cosmic shear and 3×2pt pipelines to segregate cosmological parameters from non-linear astrophysics follow targeted structures:
+## 1. KiDS (Kilo-Degree Survey / KiDS-1000)
+The [KiDS-1000 analysis](https://discovery.ucl.ac.uk/10117910/1/kids1000method.pdf) utilizes 8 custom-binned bandpowers constructed to balance information content against systematic vulnerability: [1, 2] 
+
+* 
+* Total Scope: Spans a range of $76 < \ell < 1500$. [1] 
+* Low-Multipole Filter: Bins below $\ell = 100$ are heavily suppressed or explicitly discarded because the large-scale analytical covariance modeling lacks stability at very low multipoles. [3] 
+* Linear/Quasi-Linear Domain: The lower bandpowers capture the core linear growth signal, where Intrinsic Alignment (IA) is modeled predominantly via linear NLA (Non-Linear Alignment) extensions.
+* Non-Linear Edge: The upper limit is capped strictly at $\ell = 1500$. This explicit boundary shields cosmological parameter estimation (S₈) from extreme, unmodelled baryonic feedback that alters the underlying matter power spectrum at higher frequencies. [1] 
+* 
+
+## 2. DES (Dark Energy Survey / Y3 & Y4/Y6 Framework)
+The Dark Energy Survey pipelines map cosmic shear and galaxy–galaxy lensing across broad tomographic networks, often evaluating information using discrete $\ell$-band selections. [4] 
+
+* 
+* Low-Frequency Splitting: Standard DES harmonic-space analyses employ a sequence of binned intervals:
+* Bins with a constant linear width of $\Delta \ell = 30$ spanning $0 \le \ell \le 240$.
+   * Logarithmically spaced bins extending up to the mapping ceiling of $\ell \sim 10,244$ with an interval footprint of $\Delta \log_{10}(\ell) = 0.055$. [3] 
+* Systematic Isolation & Conservative Cuts: To safeguard cosmic shear data vectors from catastrophic baryonic modeling bias:
+* In fiducial map-level analyses, data bins that contain power values exceeding $\ell > 1024$ are entirely excluded.
+   * Regions below $\ell < 20$ are dropped to prevent contamination from poorly bounded large-scale window configurations. [3, 5] 
+* 
+
+## 3. Core Lensing Bandpower Formula
+Mathematically, the pipelines convert the underlying tomographic E-mode power spectrum ($C_{\ell}^{EE}$) into the observed bandpowers $C_{B}^{E}$ by evaluating a specific kernel: [2] 
+$$\mathcal{C}_{B}^{E} = \frac{1}{\mathcal{N}_l} \int_{0}^{\infty} d\ell \, \ell \, \mathcal{S}_l(\ell) C_{\ell}^{EE}$$ 
+
+* 
+* $\mathcal{S}_l(\ell)$: The bandpower response function designed to capture discrete scales cleanly.
+* $\mathcal{N}_l$: The normalization factor constructed so that the resulting bandpower maps onto $\ell^2 C_{\ell}/2\pi$ at the log-center of the designated bin. [2] 
+* 
+
+------------------------------
+[1] [https://www.aanda.org](https://www.aanda.org/articles/aa/full_html/2022/09/aa42481-21/aa42481-21.html)
+[2] [https://discovery.ucl.ac.uk](https://discovery.ucl.ac.uk/10117910/1/kids1000method.pdf)
+[3] [https://arxiv.org](https://arxiv.org/html/2403.13794v2)
+[4] [https://arxiv.org](https://arxiv.org/html/2601.14559v2)
+[5] [https://arxiv.org](https://arxiv.org/html/2606.11309v1)
