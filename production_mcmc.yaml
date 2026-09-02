@@ -24,15 +24,34 @@ likelihood:
     baryonic_feedback_model: hmcode
 
 theory:
+  # Call your custom script module class
+  custom_fluid.CustomBackgroundFluid:
+    # Explicit python import path mapping if located outside the execution directory
+    python_path: .
+   
   camb:
     path: /opt/cosmology/modules/CAMB
     stop_at_error: False
     extra_args:
       lens_potential_accuracy: 2
-      AccuracyBoost: 1.2
-      lSampleBoost: 1.2
-      lAccuracyBoost: 1.2
-      halofit_version: mead2020  # Explicitly enables HMcode baryonic feedback tracking
+      halofit_version: mead2020
+      # Pass the custom modification parameters straight into the CAMB initialization block
+      external_hubble_grid: True
+
+params:
+  # ============================================================================
+  # Custom Fluid Parameter Priors & Reference Coordinates
+  # ============================================================================
+  alpha_fluid:
+    prior: {min: -0.5, max: 0.5}
+    ref: 0.0
+    proposal: 0.01
+    latex: \alpha_{\rm fluid}
+  z_decay:
+    prior: {min: 0.1, max: 4.5}
+    ref: 1.5
+    proposal: 0.1
+    latex: z_{\rm decay}
 
 params:
   # ============================================================================
