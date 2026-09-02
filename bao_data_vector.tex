@@ -1,0 +1,28 @@
+The official compressed Baryon Acoustic Oscillation (BAO) measurements from the Dark Energy Spectroscopic Instrument Data Release 2 (DESI DR2) are evaluated across seven distinct effective redshift channels. [1, 2, 3] 
+The values of the transverse comoving distance ratio ($D_M/r_d$), the line-of-sight Hubble distance ratio ($D_H/r_d$), and the spherically averaged volume distance ratio ($D_V/r_d$) from the consensus configuration-space analysis are structured as follows: [3, 4] 
+## DESI DR2 BAO Distance Realizations
+
+| Target Sample Tracer | Effective Redshift ($z_{\rm eff}$) | $D_M(z)/r_d$ Value | $D_H(z)/r_d$ Value | Isotropic $D_V(z)/r_d$ Value |
+|---|---|---|---|---|
+| BGS (Bright Galaxy Sample) | 0.295 | N/A (Isotropic only) | N/A (Isotropic only) | $7.93 \pm 0.15$ |
+| LRG1 (Luminous Red Galaxies 1) | 0.510 | $13.59 \pm 0.17$ | $21.86 \pm 0.43$ | N/A (Anisotropic basis) |
+| LRG2 (Luminous Red Galaxies 2) | 0.706 | $17.35 \pm 0.18$ | $19.46 \pm 0.33$ | N/A (Anisotropic basis) |
+| LRG3 + ELG1 (Combined Sample) | 0.934 | $21.57 \pm 0.15$ | $17.64 \pm 0.19$ | N/A (Anisotropic basis) |
+| ELG2 (Emission Line Galaxies 2) | 1.321 | $27.61 \pm 0.32$ | $14.18 \pm 0.22$ | N/A (Anisotropic basis) |
+| QSO (Quasars) | 1.484 | $30.52 \pm 0.76$ | $12.82 \pm 0.52$ | N/A (Anisotropic basis) |
+| Lyman-$\alpha$ Forest | 2.330 | $38.99 \pm 0.53$ | $8.63 \pm 0.10$ | N/A (Anisotropic basis) |
+
+------------------------------
+## Functional Scaling Implementations
+
+   1. Isotropic Constraint Constraints: The low-redshift BGS channel maps volume dynamics exclusively via the integrated spherically-averaged template parameter $D_V(z)\equiv [z D_M^2(z) D_H(z)]^{1/3}$. [5] 
+   2. Anisotropic Parameter Splits: Redshift bins from $z=0.510$ up to $z=2.330$ isolate the Alcock-Paczynski scaling components directly into independent transverse components ($D_M/r_d$) and radial paths ($D_H/r_d$). [3] 
+   3. Correlation Handling: For any code architecture loading the anisotropic parameters, you must ensure that your likelihood routine accounts for the cross-correlation coefficient ($r_{M,H}$) defined between the transverse and line-of-sight dimensions within each tomographic bin (which generally scales inside the range of $-0.40$ to $-0.50$ for the DESI framework). [2, 6] 
+
+[1] [https://link.aps.org](https://link.aps.org/doi/10.1103/tr6y-kpc6)
+[2] [https://researchportal.port.ac.uk](https://researchportal.port.ac.uk/files/112032813/DESI_DR2_Results_II.pdf)
+[3] [https://arxiv.org](https://arxiv.org/pdf/2507.01380)
+[4] [https://www.osti.gov](https://www.osti.gov/servlets/purl/3006585)
+[5] [https://arxiv.org](https://arxiv.org/html/2511.02220v1)
+[6] [https://link.springer.com](https://link.springer.com/article/10.1140/epjc/s10052-025-15090-0)
+[7] [https://arxiv.org](https://arxiv.org/html/2607.28918v2)
