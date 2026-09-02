@@ -1,0 +1,59 @@
+To project three-dimensional clustering information into the two-dimensional angular observables utilized by Stage-IV weak lensing and clustering likelihoods, your MCMC engine must evaluate line-of-sight integrals of the 3D matter power spectrum, weighted by adaptive geometric kernels.
+Under the first-order Limber approximation, a generic angular cross-power spectrum $C_\ell^{XY}$ between two tomographic tracers $X$ and $Y$ (where $X, Y \in \{\gamma \text{ (shear)}, \delta_g \text{ (galaxy position)}, \kappa \text{ (CMB convergence)}\}$) at angular multipole $\ell$ is factually formulated as:
+$$C_\ell^{XY} = \int_{0}^{\chi_{\rm *}} \frac{W_X(\chi) W_Y(\chi)}{\chi^2} P_{\delta \delta} \left( k = \frac{\ell + 1/2}{\chi}, z(\chi) \right) d\chi$$ 
+Where:
+
+* $\chi$ is the comoving distance acting as the line-of-sight integration variable.
+* $\chi_{\rm *}$ is the comoving distance to the horizon (or surface of last scattering).
+* $P_{\delta \delta}(k, z)$ is the non-linear 3D matter power spectrum evaluated at wavenumber $k = (\ell + 1/2)/\chi$.
+* $W_X(\chi)$ and $W_Y(\chi)$ are the continuous, adaptive geometric weight kernels specific to each probe channel.
+
+------------------------------
+## 1. Mathematical Formulation of the Truncated Kernels
+The exact mathematical structures of these weight kernels depend on how the physical geometry interacts with the distribution of the tracers along the line of sight:
+## Cosmic Shear / Weak Lensing Kernel ($W_\gamma^i$)
+For a given tomographic source bin $i$, the efficiency of gravitational lensing relies on the integrated mass distribution between the observer and the background source galaxies:
+$$W_\gamma^i(\chi) = \frac{3 \Omega_m H_0^2}{2 c^2} \frac{\chi}{a(\chi)} \int_{\chi}^{\chi_{\rm *}} n_i(\chi') \frac{\chi' - \chi}{\chi'} d\chi'$$ 
+Where $n_i(\chi')d\chi' = p_i(z)dz$ represents the normalized, selection-weighted photometric redshift distribution of galaxies assigned to tomographic bin $i$, and $a(\chi)$ is the scale factor.
+## Galaxy Clustering / Position Kernel ($W_{\delta_g}^i$)
+For a foreground lens galaxy sample, the kernel maps the localized spatial distribution of the tracer, modulated by its linear galaxy bias $b_i(z)$:
+$$W_{\delta_g}^i(\chi) = b_i\left(z(\chi)\right) n_i\left(\chi\right) \frac{dz}{d\chi} = b_i\left(z(\chi)\right) n_i\left(\chi\right) H\left(z(\chi)\right)$$ 
+## CMB Lensing Convergence Kernel ($W_\kappa$)
+Because the Cosmic Microwave Background acts as a single, clean source plane located at the edge of the observable universe ($\chi_{\rm CMB} \approx 14,000 \text{ Mpc}$ at $z \sim 1100$), its geometric kernel does not use tomographic bins. Instead, it spans a broad, single-envelope kernel:
+$$W_\kappa(\chi) = \frac{3 \Omega_m H_0^2}{2 c^2} \frac{\chi}{a(\chi)} \left( \frac{\chi_{\rm CMB} - \chi}{\chi_{\rm CMB}} \right)$$ 
+------------------------------
+## 2. Physical Evolution Across the 3x2pt Joint Matrix
+The DES Y6 and KiDS-Legacy analyses build their entire multivariate Gaussian likelihood vectors by cross-correlating these exact kernels across different lines of sight. This is designated as the 3x2pt (three-times-two-point) configuration:
+
+                    3x2pt OBSERVATIONAL PILLARS
+                    
+  [ W_γ × W_γ ]  ===> Cosmic Shear            ===> Pure mass-to-mass mapping
+  [ W_δ_g × W_γ ] ===> Galaxy-Galaxy Lensing   ===> Lens-source cross-correlations
+  [ W_δ_g × W_δ_g ]===> Galaxy Clustering      ===> Spatial autocorrelation of lenses
+
+
+* Cosmic Shear ($C_\ell^{\gamma_i \gamma_j}$): Correlates two lensing kernels. Because the integral combines two broad background kernels ($\int_\chi^{\chi_*} n(\chi')d\chi'$), cosmic shear is highly sensitive to the smooth, integrated growth of dark matter structure across broad redshift windows.
+* Galaxy-Galaxy Lensing ($C_\ell^{\delta_{g,i} \gamma_j}$): Correlates a sharp, localized galaxy position kernel ($W_{\delta_g}^i$) with a broad background lensing kernel ($W_\gamma^j$). This breaks the degeneracy between the true matter density and the unknown galaxy bias $b(z)$ by measuring the dark matter profile directly wrapped around the lens galaxies.
+* Galaxy Clustering ($C_\ell^{\delta_{g,i} \delta_{g,j}}$): Correlates two identical galaxy position kernels. This provides a direct measure of the spatial power spectrum shape within narrow, localized spatial shells.
+
+------------------------------
+## 3. Adaptive Shift Implementation in the MCMC Chain
+When checking a non-standard cosmological model, these line-of-sight integrals cannot be treated as static templates. The MCMC sampler must compute them adaptively at every single parameter coordinate step:
+
+  [ Sampler Coordinate Step ] 
+             │
+             ▼
+  [ Solve H(z), χ(z), and rd via Boltzmann ] 
+             │
+             ▼
+  [ Adaptively deform W_X(χ) and W_Y(χ) integration grids ] 
+             │
+             ▼
+  [ Shift non-linear scale matching: k = (ℓ + 1/2) / χ ] 
+             │
+             ▼
+  [ Compute C_ℓ theoretical vector ] ---> [ Evaluate Matrix χ² Residual ]
+
+
+   1. Geometric Scaling: If your model shifts $H_0$ or introduces dynamic dark energy ($w_0 w_a$), the comoving distance relation $\chi(z) = \int c dz/H(z)$ deforms. This dynamically shifts the peaks of the geometric kernels and alters the exact physical scale $k$ probed at a given angular multipole $\ell$.
+   2. Growth Distortion: Modifications to gravity or early-universe parameters dynamically reshape the underlying 3D power spectrum $P_{\delta \delta}(k, z)$ over time. If your model suppresses structure growth at late times to resolve the $S_8$ tension, that reduction is integrated through the line-of-sight kernels, altering the final amplitude of the theoretical $C_\ell$ vector.
